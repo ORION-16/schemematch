@@ -51,9 +51,9 @@ MONGO_URI=your_mongodb_connection_string
 NODE_ENV=development
 ```
 
-## Deployment (Free Hosting)
+## Deployment (Recommended: Render.com)
 
-This application is configured for a **Unified Deployment**, meaning both the React frontend and Node.js backend run on a single server instance. This is perfect for free hosting on platforms like **Render.com**.
+This application is configured for a **Unified Deployment**, meaning both the React frontend and Node.js backend run on a single server instance. This is highly recommended for free hosting on platforms like **Render.com**.
 
 ### Steps to Deploy on Render
 1. Push this repository to your GitHub account.
@@ -61,13 +61,17 @@ This application is configured for a **Unified Deployment**, meaning both the Re
 3. Connect your GitHub repository.
 4. Use the following configuration:
    - **Environment:** `Node`
-   - **Build Command:** `npm install && npm run build`
+   - **Build Command:** `npm run install-all && npm run build`
    - **Start Command:** `npm start`
 5. Click **Advanced** and add the following Environment Variables:
-   - `MONGO_URI`: (Your production MongoDB connection string, e.g. MongoDB Atlas)
+   - `NODE_ENV`: `production`
+   - `MONGO_URI`: (Your production MongoDB connection string from MongoDB Atlas)
 6. Click **Create Web Service**.
 
-Render will automatically install the client and server dependencies, build the React App using Vite, and start the Express server which serves the API and the React files seamlessly underneath one URL!
+> [!NOTE]
+> **Why Render?** Unlike Vercel, Render supports long-running Node.js processes on their free tier, which is essential for our persistent Express server and Mongoose connection.
+
+Render will automatically install all dependencies, build the React App, and start the unified server!
 
 ## Environment Variables
 **Server (`server/.env`):**
