@@ -56,8 +56,23 @@ app.use(errorHandler);
 // ── Database & Server ──
 mongoose
   .connect(process.env.MONGO_URI)
-  .then(() => {
+  .then(async () => {
     console.log('MongoDB connected successfully');
+    
+    // Auto-seed if empty
+    const Scheme = require('./models/Scheme');
+    const count = await Scheme.countDocuments();
+    if (count === 0) {
+      console.log('Database empty. Auto-seeding initial schemes...');
+      try {
+        const { schemes } = require('./data/seedSchemes'); 
+        await Scheme.insertMany(schemes);
+        console.log('Auto-seed complete.');
+      } catch (err) {
+        console.error('Auto-seed failed:', err.message);
+      }
+    }
+
     app.listen(PORT, () => {
       console.log(`SchemeMatch API server running on port ${PORT}`);
     });

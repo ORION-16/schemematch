@@ -414,4 +414,9 @@ async function seed() {
   }
 }
 
-seed();
+// Export for auto-seeding in server.js
+module.exports = { schemes, seed };
+
+if (require.main === module) {
+  seed();
+}
