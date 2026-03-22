@@ -36,7 +36,7 @@ const resources = {
         socioInfo: "Socio-Economic Profile",
         categoryTitle: "Which category do you belong to?",
         incomeTitle: "What is your annual family income?",
-        incomeText: "₹{{income}} Lakhs",
+        incomeText: "₹{{income}} Lakh",
         occInfo: "Occupation Details",
         occTitle: "What is your primary occupation?",
         occOptions: {

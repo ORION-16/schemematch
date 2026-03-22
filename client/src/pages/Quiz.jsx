@@ -94,14 +94,16 @@ export default function Quiz() {
             <div>
               <div className="flex justify-between items-end mb-4">
                 <label className="block text-[var(--navy-mid)] font-semibold text-lg">{t('quiz.incomeTitle')}</label>
-                <span className="text-xl font-bold text-[var(--navy)] bg-white px-4 py-2 rounded-xl shadow-sm border border-[var(--border)]">{t('quiz.incomeText', { income: profile.income })}</span>
+                <span className="text-xl font-bold text-[var(--navy)] bg-white px-4 py-2 rounded-xl shadow-sm border border-[var(--border)]">
+                  {t('quiz.incomeText', { income: (profile.income / 100000).toFixed(1) })}
+                </span>
               </div>
               <RangeSlider
                 min={0}
-                max={1500000}
-                step={10000}
-                value={profile.income}
-                onChange={(v) => updateProfile('income', v)}
+                max={20}
+                step={0.1}
+                value={profile.income / 100000}
+                onChange={(v) => updateProfile('income', Math.round(v * 100000))}
               />
             </div>
           </QuizStep>
