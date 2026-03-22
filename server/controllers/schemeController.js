@@ -1,6 +1,23 @@
 const Scheme = require('../models/Scheme');
 
 /**
+ * Self-healing helper: If the database is empty, seed it with initial data.
+ */
+async function ensureSchemes() {
+  const count = await Scheme.countDocuments();
+  if (count === 0) {
+    console.log('Database empty during request. Triggering auto-seed...');
+    try {
+      const { schemes } = require('../data/seedSchemes');
+      await Scheme.insertMany(schemes);
+      console.log('On-demand auto-seed complete.');
+    } catch (err) {
+      console.error('On-demand auto-seed failed:', err.message);
+    }
+  }
+}
+
+/**
  * Check if a scheme's eligibility criteria match a user profile.
  * Missing profile fields are treated as the most inclusive case.
  */
@@ -75,6 +92,7 @@ function isEligible(scheme, profile) {
 // POST /api/match
 exports.matchSchemes = async (req, res, next) => {
   try {
+    await ensureSchemes();
     const { profile } = req.body;
     if (!profile) {
       return res.status(400).json({ success: false, error: 'Profile is required' });
@@ -95,6 +113,7 @@ exports.matchSchemes = async (req, res, next) => {
 // GET /api/schemes
 exports.getAllSchemes = async (req, res, next) => {
   try {
+    await ensureSchemes();
     const filter = {};
     if (req.query.category) {
       filter.category = req.query.category;
