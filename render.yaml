@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: schemematch
+    env: node
+    buildCommand: npm run install-all && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGO_URI
+        fromConfig: MONGO_URI # User will need to set this in Render dashboard
