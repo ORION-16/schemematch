@@ -11,8 +11,7 @@
 ---
 
 ## 🚀 [LIVE DEMO](https://schemematch.onrender.com)
-*(Note: Replace this with your actual Render URL once deployment is finished)*
-
+https://schemematch.onrender.com/
 ---
 
 ## ✨ Key Features
@@ -43,9 +42,9 @@
 
 ## 📸 Screenshots
 
-| Landing Page | Smart Quiz | Eligibility Results |
+| [Landing Page](screenshots/landing.png) | [Smart Quiz](screenshots/quiz.png) | [Eligibility Results](screenshots/results.png) |
 | :--- | :--- | :--- |
-| ![Landing Placeholder](https://via.placeholder.com/800x450?text=SchemeMatch+Landing+Page) | ![Quiz Placeholder](https://via.placeholder.com/800x450?text=Interactive+Quiz+Flow) | ![Results Placeholder](https://via.placeholder.com/800x450?text=Personalized+Scheme+List) |
+| ![Landing Page](screenshots/landing.png) | ![Smart Quiz](screenshots/quiz.png) | ![Eligibility Results](screenshots/results.png) |
 
 ---
 
