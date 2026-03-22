@@ -66,7 +66,18 @@ const resources = {
         noResults: "No results found",
         returnHome: "Return Home",
         viewDetails: "View Details & Apply",
-        printList: "Print List"
+        printList: "Print List",
+        all: "All"
+      },
+      categories: {
+        Agriculture: "Agriculture",
+        Health: "Health",
+        Finance: "Finance",
+        Education: "Education",
+        Employment: "Employment",
+        Housing: "Housing",
+        Women: "Women",
+        Senior: "Senior Citizen"
       },
       panel: {
         appDetails: "Application Details",
@@ -148,7 +159,18 @@ const resources = {
         noResults: "कोई परिणाम नहीं मिला",
         returnHome: "होम पर लौटें",
         viewDetails: "विवरण देखें और आवेदन करें",
-        printList: "सूची प्रिंट करें"
+        printList: "सूची प्रिंट करें",
+        all: "सभी"
+      },
+      categories: {
+        Agriculture: "कृषि",
+        Health: "स्वास्थ्य",
+        Finance: "वित्त",
+        Education: "शिक्षा",
+        Employment: "रोजगार",
+        Housing: "आवास",
+        Women: "महिला",
+        Senior: "वरिष्ठ नागरिक"
       },
       panel: {
         appDetails: "आवेदन विवरण",
@@ -230,7 +252,18 @@ const resources = {
         noResults: "कोणतेही परिणाम आढळले नाहीत",
         returnHome: "मुख्यपृष्ठावर परत या",
         viewDetails: "तपशील पहा आणि अर्ज करा",
-        printList: "यादी मुद्रित करा"
+        printList: "यादी प्रिंट करा",
+        all: "सर्व"
+      },
+      categories: {
+        Agriculture: "कृषि",
+        Health: "आरोग्य",
+        Finance: "वित्त",
+        Education: "शिक्षण",
+        Employment: "रोजगार",
+        Housing: "गृहनिर्माण",
+        Women: "महिला",
+        Senior: "ज्येष्ठ नागरिक"
       },
       panel: {
         appDetails: "अर्ज तपशील",

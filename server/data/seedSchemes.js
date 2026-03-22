@@ -218,6 +218,16 @@ const schemes = [
     link: 'https://www.mudra.org.in',
     linkType: 'URL',
     eligibility: { occupations: ['Self-employed', 'Unemployed'] },
+    translations: {
+      hi: {
+        name: 'प्रधानमंत्री मुद्रा योजना',
+        benefit: 'लघु और सूक्ष्म उद्यमों के लिए ₹10 लाख तक के संपार्श्विक-मुक्त ऋण।'
+      },
+      mr: {
+        name: 'प्रधानमंत्री मुद्रा योजना',
+        benefit: 'लहान आणि सूक्ष्म उद्योगांसाठी ₹१० लाखांपर्यंतचे तारणमुक्त कर्ज.'
+      }
+    }
   },
   {
     id: 12,
@@ -228,6 +238,16 @@ const schemes = [
     link: 'https://www.pmkvyofficial.org',
     linkType: 'URL',
     eligibility: { occupations: ['Unemployed'], minAge: 15, maxAge: 45 },
+    translations: {
+      hi: {
+        name: 'पीएम कौशल विकास योजना (PMKVY)',
+        benefit: 'सरकार द्वारा मान्यता प्राप्त प्रमाणन के साथ 300+ जॉब रोल में मुफ्त कौशल प्रशिक्षण।'
+      },
+      mr: {
+        name: 'पीएम कौशल विकास योजना (PMKVY)',
+        benefit: 'सरकार-मान्यता प्राप्त प्रमाणपत्रासह ३००+ जॉब रोलमध्ये मोफत कौशल्य प्रशिक्षण.'
+      }
+    }
   },
   {
     id: 13,
@@ -239,6 +259,16 @@ const schemes = [
     linkType: 'URL',
     deadline: 'August–November annually',
     eligibility: { occupations: ['Student'], maxIncome: 250000 },
+    translations: {
+      hi: {
+        name: 'राष्ट्रीय छात्रवृत्ति पोर्टल',
+        benefit: 'प्री-मैट्रिक और पोस्ट-मैट्रिक छात्रों के लिए ₹1,000–25,000/वर्ष की छात्रवृत्ति।'
+      },
+      mr: {
+        name: 'राष्ट्रीय शिष्यवृत्ती पोर्टल',
+        benefit: 'प्री-मॅट्रिक आणि पोस्ट-मॅट्रिक विद्यार्थ्यांसाठी ₹१,०००–२५,०००/वर्ष शिष्यवृत्ती.'
+      }
+    }
   },
   {
     id: 14,
@@ -249,6 +279,16 @@ const schemes = [
     link: 'https://scholarships.gov.in',
     linkType: 'URL',
     eligibility: { occupations: ['Student'], categories: ['SC', 'ST'] },
+    translations: {
+      hi: {
+        name: 'पोस्ट-मैट्रिक छात्रवृत्ति SC/ST',
+        benefit: 'पोस्ट-मैट्रिक शिक्षा में SC/ST छात्रों के लिए पूरी ट्यूशन फीस + रखरखाव भत्ता।'
+      },
+      mr: {
+        name: 'पोस्ट-मॅट्रिक शिष्यवृत्ती SC/ST',
+        benefit: 'पोस्ट-मॅट्रिक शिक्षण घेत असलेल्या SC/ST विद्यार्थ्यांसाठी पूर्ण शिक्षण शुल्क + निर्वाह भत्ता.'
+      }
+    }
   },
   {
     id: 15,
@@ -262,6 +302,16 @@ const schemes = [
       customRule:
         "(profile.category==='SC'||profile.category==='ST'||profile.gender==='Female') && profile.occupation==='Self-employed'",
     },
+    translations: {
+      hi: {
+        name: 'स्टैंड अप इंडिया',
+        benefit: 'SC/ST और महिला उद्यमियों के लिए ₹10 लाख–₹1 करोड़ का बैंक ऋण।'
+      },
+      mr: {
+        name: 'स्टँड अप इंडिया',
+        benefit: 'SC/ST आणि महिला उद्योजकांसाठी ₹१० लाख–₹१ कोटींचे बँक कर्ज.'
+      }
+    }
   },
   {
     id: 16,
@@ -280,6 +330,16 @@ const schemes = [
       maxIncome: 150000,
       occupations: ['Farmer', 'Unemployed', 'Daily Wage Worker'],
     },
+    translations: {
+      hi: {
+        name: 'मनरेगा (MGNREGA)',
+        benefit: 'ग्रामीण परिवारों के लिए प्रति वर्ष 100 दिनों के गारंटीकृत मजदूरी रोजगार।'
+      },
+      mr: {
+        name: 'मनरेगा (MGNREGA)',
+        benefit: 'ग्रामीण कुटुंबांसाठी दरवर्षी १०० दिवसांच्या मजुरीच्या रोजगाराची हमी.'
+      }
+    }
   },
   {
     id: 17,
@@ -290,6 +350,16 @@ const schemes = [
     link: 'https://www.licindia.in/Products/Pension-Plans/Pradhan-Mantri-Vaya-Vandana-Yojana',
     linkType: 'URL',
     eligibility: { minAge: 60 },
+    translations: {
+      hi: {
+        name: 'पीएम वय वंदना योजना',
+        benefit: '10 वर्षों के लिए 7.4% प्रति वर्ष की गारंटीकृत पेंशन। ₹15 लाख तक निवेश करें।'
+      },
+      mr: {
+        name: 'पीएम वय वंदना योजना',
+        benefit: '१० वर्षांसाठी वर्षाला ७.४% दराने हमी निवृत्ती वेतन. ₹१५ लाखांपर्यंत गुंतवणूक करा.'
+      }
+    }
   },
   {
     id: 18,
@@ -310,7 +380,18 @@ const schemes = [
       minAge: 60,
       customRule: "profile.age>=60 && (profile.hasBPL==='yes' || profile.income<=100000)",
     },
+    translations: {
+      hi: {
+        name: 'इंदिरा गांधी राष्ट्रीय वृद्धावस्था पेंशन',
+        benefit: '60+ आयु के निराश्रित बीपीएल वरिष्ठ नागरिकों के लिए ₹200–500 की मासिक पेंशन।'
+      },
+      mr: {
+        name: 'इंदिरा गांधी राष्ट्रीय वृद्धापकाळ निवृत्ती वेतन',
+        benefit: '६०+ वयोगटातील निराश्रित बीपीएल ज्येष्ठ नागरिकांसाठी दरमहा ₹२००-५०० निवृत्ती वेतन.'
+      }
+    }
   },
+
   {
     id: 19,
     name: 'Beti Bachao Beti Padhao',
@@ -320,6 +401,16 @@ const schemes = [
     link: 'https://wcd.nic.in/bbbp-schemes',
     linkType: 'URL',
     eligibility: { requiresGirlChild: true },
+    translations: {
+      hi: {
+        name: 'बेटी बचाओ बेटी पढ़ाओ',
+        benefit: 'बालिकाओं की शिक्षा के लिए वित्तीय प्रोत्साहन और छात्रवृत्ति सहायता।'
+      },
+      mr: {
+        name: 'बेटी बचाओ बेटी पढाओ',
+        benefit: 'मुलींच्या शिक्षणासाठी आर्थिक प्रोत्साहन आणि शिष्यवृत्ती सहाय्य.'
+      }
+    }
   },
   {
     id: 20,
@@ -337,6 +428,16 @@ const schemes = [
     eligibility: {
       customRule: "profile.hasBPL==='yes' || profile.income<=100000",
     },
+    translations: {
+      hi: {
+        name: 'पीएम गरीब कल्याण अन्न योजना',
+        benefit: 'राशन कार्ड धारकों के लिए प्रति व्यक्ति प्रति माह 5 किलो मुफ्त खाद्यान्न।'
+      },
+      mr: {
+        name: 'पीएम गरीब कल्याण अन्न योजना',
+        benefit: 'रेशन कार्ड धारकांसाठी दरमहा प्रति व्यक्ती ५ किलो मोफत अन्नधान्य.'
+      }
+    }
   },
   {
     id: 21,
@@ -348,6 +449,16 @@ const schemes = [
     linkType: 'URL',
     deadline: 'Annual renewal',
     eligibility: { minAge: 18, maxAge: 50 },
+    translations: {
+      hi: {
+        name: 'पीएम जीवन ज्योति बीमा योजना',
+        benefit: 'मात्र ₹330/वर्ष के प्रीमियम पर ₹2 लाख का जीवन बीमा कवर।'
+      },
+      mr: {
+        name: 'पीएम जीवन ज्योती विमा योजना',
+        benefit: 'केवळ ₹३३०/वर्ष प्रीमियममध्ये ₹२ लाखांचे जीवन विमा संरक्षण.'
+      }
+    }
   },
   {
     id: 22,
@@ -359,6 +470,16 @@ const schemes = [
     linkType: 'URL',
     deadline: 'Annual renewal',
     eligibility: { minAge: 18, maxAge: 70 },
+    translations: {
+      hi: {
+        name: 'पीएम सुरक्षा बीमा योजना',
+        benefit: '₹20/वर्ष पर मृत्यु/विकलांगता के लिए ₹2 लाख का दुर्घटना बीमा कवर।'
+      },
+      mr: {
+        name: 'पीएम सुरक्षा विमा योजना',
+        benefit: 'मृत्यू/अपंगत्वासाठी ₹२०/वर्ष दराने ₹२ लाखांचे अपघात विमा संरक्षण.'
+      }
+    }
   },
   {
     id: 23,
@@ -369,6 +490,16 @@ const schemes = [
     link: 'https://eshram.gov.in',
     linkType: 'URL',
     eligibility: { occupations: ['Daily Wage Worker', 'Farmer', 'Self-employed'] },
+    translations: {
+      hi: {
+        name: 'ई-श्रम पोर्टल पंजीकरण',
+        benefit: 'असंगठित श्रमिकों के लिए UAN कार्ड + ₹2 लाख का दुर्घटना बीमा + योजनाओं तक पहुंच।'
+      },
+      mr: {
+        name: 'ई-श्रम पोर्टल नोंदणी',
+        benefit: 'असंघटित कामगारांसाठी UAN कार्ड + ₹२ लाखांचा अपघात विमा + योजनांचा लाभ.'
+      }
+    }
   },
   {
     id: 24,
@@ -379,6 +510,16 @@ const schemes = [
     link: 'https://npscra.nsdl.co.in/scheme-details.php',
     linkType: 'URL',
     eligibility: { minAge: 18, maxAge: 40, maxIncome: 300000 },
+    translations: {
+      hi: {
+        name: 'अटल पेंशन योजना',
+        benefit: '60 वर्ष की आयु के बाद ₹1,000–5,000 की गारंटीकृत मासिक पेंशन। प्रीमियम आयु के अनुसार बदलता है।'
+      },
+      mr: {
+        name: 'अटल पेन्शन योजना',
+        benefit: 'वयाचे ६० वर्ष पूर्ण झाल्यानंतर ₹१,०००–५,००० चे गॅरंटीड मासिक पेन्शन. प्रीमियम वयानुसार बदलतो.'
+      }
+    }
   },
   {
     id: 25,
@@ -391,6 +532,16 @@ const schemes = [
     eligibility: {
       customRule: "profile.occupation==='Self-employed' && profile.income<=150000",
     },
+    translations: {
+      hi: {
+        name: 'पीएम स्वनिधि',
+        benefit: 'रेहड़ी-पटरी वालों के लिए ₹10,000–₹50,000 का संपार्श्विक-मुक्त कार्यशील पूंजी ऋण।'
+      },
+      mr: {
+        name: 'पीएम स्वनिधी',
+        benefit: 'फेरीवाल्यांसाठी ₹१०,०००–₹५०,००० चे तारणमुक्त खेळते भांडवल कर्ज.'
+      }
+    }
   },
 ];
 
