@@ -1,0 +1,11 @@
+{
+  "name": "schemematch-unified",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Unified package.json for deploying Client and Server on a single free Render Web Service",
+  "scripts": {
+    "install-all": "npm install --prefix server && npm install --prefix client --legacy-peer-deps",
+    "build": "npm run build --prefix client",
+    "start": "npm start --prefix server"
+  }
+}
