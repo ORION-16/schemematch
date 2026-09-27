@@ -171,3 +171,8 @@ exports.searchSchemes = async (req, res, next) => {
     next(error);
   }
 };
+
+
+// Add at the bottom of schemeController.js
+module.exports.isEligible = isEligible;
+module.exports.relevanceScore = relevanceScore;
