@@ -25,6 +25,7 @@ const schemeSchema = new mongoose.Schema(
     schemeId: { type: String, unique: true, sparse: true },
     state: { type: String, default: 'Central' },
     beneficiaryType: { type: String },
+    tags: { type: [String], default: [] },
     eligibility: {
       minAge: Number,
       maxAge: Number,
