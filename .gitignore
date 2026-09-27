@@ -30,3 +30,4 @@ client.log
 Thumbs.db
 ehthumbs.db
 Desktop.ini
+server/.env
