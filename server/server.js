@@ -10,6 +10,8 @@ require('dotenv').config();
 const schemesRouter = require('./routes/schemes');
 const profilesRouter = require('./routes/profiles');
 const errorHandler = require('./middleware/errorHandler');
+const cron = require('node-cron');
+const importSchemes = require('./data/importSchemes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -72,6 +74,14 @@ mongoose
         console.error('Auto-seed failed:', err.message);
       }
     }
+
+    // Schedule weekly scraping job
+    // Runs every Sunday at midnight
+    cron.schedule('0 0 * * 0', () => {
+      console.log('Running weekly scheme sync...');
+      importSchemes();
+    });
+    console.log('Cron job scheduled: Weekly scheme sync.');
 
     app.listen(PORT, () => {
       console.log(`SchemeMatch API server running on port ${PORT}`);
