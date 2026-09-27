@@ -37,7 +37,6 @@ const schemeSchema = new mongoose.Schema(
       requiresNoHouse: { type: Boolean, default: false },
       requiresGirlChild: { type: Boolean, default: false },
       requiresPregnant: { type: Boolean, default: false },
-      customRule: { type: String, default: null },
     },
     translations: {
       hi: {
@@ -64,5 +63,7 @@ const schemeSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+schemeSchema.index({ name: 'text', benefit: 'text' });
 
 module.exports = mongoose.model('Scheme', schemeSchema);
