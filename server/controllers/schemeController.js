@@ -9,7 +9,14 @@ async function ensureSchemes() {
     console.log('Database empty during request. Triggering auto-seed...');
     try {
       const { schemes } = require('../data/seedSchemes');
-      await Scheme.insertMany(schemes);
+      const ops = schemes.map(s => ({
+        updateOne: {
+          filter: { id: s.id },
+          update: { $set: { ...s, source: 'seed' } },
+          upsert: true,
+        },
+      }));
+      await Scheme.bulkWrite(ops);
       console.log('On-demand auto-seed complete.');
     } catch (err) {
       console.error('On-demand auto-seed failed:', err.message);
@@ -19,81 +26,78 @@ async function ensureSchemes() {
 
 /**
  * Check if a scheme's eligibility criteria match a user profile.
- * Missing profile fields are treated as the most inclusive case.
+ *
+ * Design principle: "Open by default."
+ * A check only DISQUALIFIES a user if BOTH the scheme has a constraint
+ * AND the user's profile explicitly fails it. Missing profile fields
+ * are never grounds for exclusion — we assume the best case.
+ *
+ * No eval(), no new Function(), no string execution — ever.
  */
 function isEligible(scheme, profile) {
-  const elig = scheme.eligibility || {};
+  const e = scheme.eligibility || {};
 
-  // State filter
-  if (
-    scheme.stateCodes &&
-    scheme.stateCodes.length > 0 &&
-    !scheme.stateCodes.includes('ALL') &&
-    profile.stateCode &&
-    !scheme.stateCodes.includes(profile.stateCode)
-  ) {
-    return false;
+  // 1. Age check — only fails if BOTH scheme has limit AND profile has age
+  if (e.minAge && profile.age && profile.age < e.minAge) return false;
+  if (e.maxAge && profile.age && profile.age > e.maxAge) return false;
+
+  // 2. Income check — only fails if BOTH scheme has limit AND profile has income
+  if (e.maxIncome && profile.income && profile.income > e.maxIncome) return false;
+
+  // 3. Gender check
+  if (e.requiredGender && profile.gender && e.requiredGender !== profile.gender) return false;
+
+  // 4. Occupation check — scheme requires one of these occupations
+  if (e.occupations?.length > 0 && profile.occupation) {
+    if (!e.occupations.includes(profile.occupation)) return false;
   }
 
-  // Age check
-  if (elig.minAge != null && profile.age != null && profile.age < elig.minAge) return false;
-  if (elig.maxAge != null && profile.age != null && profile.age > elig.maxAge) return false;
-
-  // Income check
-  if (elig.maxIncome != null && profile.income != null && profile.income > elig.maxIncome) {
-    // If there's a customRule, let it handle the logic instead of hard-failing
-    if (!elig.customRule) return false;
+  // 5. Category/caste check
+  if (e.categories?.length > 0 && profile.category) {
+    if (!e.categories.includes(profile.category)) return false;
   }
 
-  // Gender check
-  if (elig.requiredGender && profile.gender && elig.requiredGender !== profile.gender) return false;
-
-  // Occupation check
-  if (
-    elig.occupations &&
-    elig.occupations.length > 0 &&
-    profile.occupation &&
-    !elig.occupations.includes(profile.occupation)
-  ) {
-    return false;
+  // 6. State check — 'ALL' means central scheme, applies everywhere
+  if (scheme.stateCodes?.length > 0 && !scheme.stateCodes.includes('ALL')) {
+    if (profile.state && !scheme.stateCodes.includes(profile.state)) return false;
   }
 
-  // Category check (General, OBC, SC, ST)
-  if (
-    elig.categories &&
-    elig.categories.length > 0 &&
-    profile.category &&
-    !elig.categories.includes(profile.category)
-  ) {
-    return false;
-  }
-
-  // Boolean flags — only exclude if flag is required AND profile says "no"
-  if (elig.requiresBPL && profile.hasBPL === 'no') return false;
-  if (elig.requiresLand && profile.hasLand === 'no') return false;
-  if (elig.requiresNoHouse && profile.hasHouse === 'yes') return false;
-  if (elig.requiresGirlChild && profile.hasGirlChild === 'no') return false;
-  if (elig.requiresPregnant && profile.isPregnant === 'no') return false;
-
-  // Custom rule evaluation
-  if (elig.customRule) {
-    try {
-      const fn = new Function('profile', `return (${elig.customRule});`);
-      if (!fn(profile)) return false;
-    } catch (err) {
-      console.error(`Custom rule error for scheme "${scheme.name}":`, err.message);
-      // On error, don't exclude the scheme
-    }
-  }
+  // 7. Boolean flags — only disqualify if profile explicitly says NO
+  if (e.requiresBPL && profile.hasBPL === 'no') return false;
+  if (e.requiresLand && profile.hasLand === 'no') return false;
+  if (e.requiresNoHouse && profile.hasHouse === 'yes') return false;
+  if (e.requiresGirlChild && profile.hasGirlChild === 'no') return false;
+  if (e.requiresPregnant && profile.isPregnant === 'no') return false;
 
   return true;
 }
 
-// POST /api/match
+/**
+ * Compute a relevance score for a matched scheme.
+ * Higher score = more eligibility fields actively match the user.
+ * Used to sort results so the most-relevant schemes appear first.
+ */
+function relevanceScore(scheme, profile) {
+  let score = 0;
+  const e = scheme.eligibility || {};
+
+  // Occupation and caste/category are weighted highest because
+  // they are the strongest signal that a scheme was designed for this user.
+  if (e.occupations?.includes(profile.occupation)) score += 3;
+  if (e.categories?.includes(profile.category)) score += 3;
+  if (e.requiredGender === profile.gender) score += 2;
+  if (e.maxIncome && profile.income && profile.income <= e.maxIncome) score += 1;
+  if (e.minAge && profile.age && profile.age >= e.minAge) score += 1;
+  if (e.maxAge && profile.age && profile.age <= e.maxAge) score += 1;
+
+  return score;
+}
+
+// POST /api/schemes/match
 exports.matchSchemes = async (req, res, next) => {
   try {
     await ensureSchemes();
-    const { profile } = req.body;
+    const { profile, page = 1, limit = 20 } = req.body;
     if (!profile) {
       return res.status(400).json({ success: false, error: 'Profile is required' });
     }
@@ -102,9 +106,19 @@ exports.matchSchemes = async (req, res, next) => {
 
     const matched = allSchemes
       .filter((scheme) => isEligible(scheme, profile))
-      .sort((a, b) => a.category.localeCompare(b.category));
+      .sort((a, b) => relevanceScore(b, profile) - relevanceScore(a, profile));
 
-    res.json({ success: true, count: matched.length, schemes: matched });
+    // Paginate
+    const start = (page - 1) * limit;
+    const paginated = matched.slice(start, start + limit);
+
+    res.json({
+      success: true,
+      total: matched.length,
+      page: Number(page),
+      totalPages: Math.ceil(matched.length / limit),
+      schemes: paginated,
+    });
   } catch (error) {
     next(error);
   }
@@ -120,6 +134,39 @@ exports.getAllSchemes = async (req, res, next) => {
     }
     const schemes = await Scheme.find(filter).lean();
     res.json({ success: true, count: schemes.length, schemes });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// GET /api/schemes/search?q=farmer&page=1&limit=20
+exports.searchSchemes = async (req, res, next) => {
+  try {
+    const { q, page = 1, limit = 20 } = req.query;
+    if (!q) {
+      return res.status(400).json({ success: false, error: 'Query required' });
+    }
+
+    const skip = (page - 1) * limit;
+
+    const results = await Scheme.find(
+      { $text: { $search: q } },
+      { score: { $meta: 'textScore' } }
+    )
+      .sort({ score: { $meta: 'textScore' } })
+      .skip(skip)
+      .limit(Number(limit))
+      .lean();
+
+    const total = await Scheme.countDocuments({ $text: { $search: q } });
+
+    res.json({
+      success: true,
+      total,
+      page: Number(page),
+      totalPages: Math.ceil(total / limit),
+      schemes: results,
+    });
   } catch (error) {
     next(error);
   }
