@@ -2,12 +2,12 @@ const mongoose = require('mongoose');
 
 const schemeSchema = new mongoose.Schema(
   {
-    id: { type: Number, unique: true, required: true },
+    id: { type: Number, unique: true, sparse: true },
     name: { type: String, required: true },
     category: {
       type: String,
       required: true,
-      enum: ['Health', 'Housing', 'Agriculture', 'Finance', 'Education', 'Women', 'Employment', 'Senior'],
+      enum: ['Health', 'Housing', 'Agriculture', 'Finance', 'Education', 'Women', 'Employment', 'Senior', 'Social Welfare', 'Business', 'Skills', 'Transport', 'Utilities', 'Other'],
     },
     benefit: { type: String, required: true },
     documents: { type: [String], default: [] },
@@ -21,6 +21,9 @@ const schemeSchema = new mongoose.Schema(
     },
     deadline: { type: String, default: 'Ongoing' },
     stateCodes: { type: [String], default: ['ALL'] },
+    source: { type: String, default: 'seed' },
+    schemeId: { type: String, unique: true, sparse: true },
+    state: { type: String, default: 'Central' },
     beneficiaryType: { type: String },
     eligibility: {
       minAge: Number,
