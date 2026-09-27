@@ -550,11 +550,16 @@ async function seed() {
     await mongoose.connect(process.env.MONGO_URI);
     console.log('MongoDB connected for seeding...');
 
-    await Scheme.deleteMany({});
-    console.log('Cleared existing schemes.');
-
-    await Scheme.insertMany(schemes);
-    console.log(`Seeded ${schemes.length} schemes successfully.`);
+    // We no longer delete all schemes. Instead, we upsert to preserve imported data.
+    const operations = schemes.map(scheme => ({
+      updateOne: {
+        filter: { id: scheme.id },
+        update: { $set: { ...scheme, source: 'seed' } },
+        upsert: true
+      }
+    }));
+    await Scheme.bulkWrite(operations);
+    console.log(`Seeded ${schemes.length} schemes successfully via bulkWrite.`);
 
     await mongoose.connection.close();
     console.log('Database connection closed.');
