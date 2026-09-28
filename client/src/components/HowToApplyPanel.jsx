@@ -80,7 +80,7 @@ export default function HowToApplyPanel({ scheme, onClose }) {
                   <a
                     href={scheme.link}
                     target="_blank"
-                    rel="noreferrer"
+                    rel="noopener noreferrer"
                     className="block w-full text-center py-3.5 rounded-xl font-bold text-white transition-opacity hover:opacity-90 shadow-lg"
                     style={{ backgroundColor: 'var(--green)' }}
                   >
