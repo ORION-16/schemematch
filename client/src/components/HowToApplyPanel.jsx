@@ -78,7 +78,7 @@ export default function HowToApplyPanel({ scheme, onClose }) {
                     {t('panel.onlineText')}
                   </p>
                   <a
-                    href={scheme.link}
+                    href={`https://www.google.com/search?q=${encodeURIComponent(scheme.name)}+site:myscheme.gov.in`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="block w-full text-center py-3.5 rounded-xl font-bold text-white transition-opacity hover:opacity-90 shadow-lg"
