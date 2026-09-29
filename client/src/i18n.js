@@ -67,7 +67,10 @@ const resources = {
         returnHome: "Return Home",
         viewDetails: "View Details & Apply",
         printList: "Print List",
-        all: "All"
+        all: "All",
+        ends: "Ends:",
+        age: "Age:",
+        docs: "Docs"
       },
       categories: {
         Agriculture: "Agriculture",
@@ -77,7 +80,12 @@ const resources = {
         Employment: "Employment",
         Housing: "Housing",
         Women: "Women",
-        Senior: "Senior Citizen"
+        Senior: "Senior Citizen",
+        "Social Welfare": "Social Welfare",
+        Business: "Business",
+        Transport: "Transport",
+        Utilities: "Utilities",
+        Other: "Other"
       },
       panel: {
         appDetails: "Application Details",
@@ -160,7 +168,10 @@ const resources = {
         returnHome: "होम पर लौटें",
         viewDetails: "विवरण देखें और आवेदन करें",
         printList: "सूची प्रिंट करें",
-        all: "सभी"
+        all: "सभी",
+        ends: "अंतिम तिथि:",
+        age: "आयु:",
+        docs: "दस्तावेज़"
       },
       categories: {
         Agriculture: "कृषि",
@@ -170,7 +181,12 @@ const resources = {
         Employment: "रोजगार",
         Housing: "आवास",
         Women: "महिला",
-        Senior: "वरिष्ठ नागरिक"
+        Senior: "वरिष्ठ नागरिक",
+        "Social Welfare": "समाज कल्याण",
+        Business: "व्यापार",
+        Transport: "परिवहन",
+        Utilities: "उपयोगिता",
+        Other: "अन्य"
       },
       panel: {
         appDetails: "आवेदन विवरण",
@@ -221,7 +237,7 @@ const resources = {
         ageText: "{{age}} वर्षे",
         socioInfo: "सामाजिक-आर्थिक प्रोफाइल",
         categoryTitle: "तुम्ही कोणत्या श्रेणीतील आहात?",
-        incomeTitle: "तुमचे वार्षिक कौटुंबिक उत्पन्न किती आहे?",
+        incomeTitle: "तुमचे वार्षिक कौटुंबिक उत्पन्न किती पेय आहे?",
         incomeText: "₹{{income}} लाख",
         occInfo: "व्यवसाय तपशील",
         occTitle: "तुमचा मुख्य व्यवसाय कोणता आहे?",
@@ -253,7 +269,10 @@ const resources = {
         returnHome: "मुख्यपृष्ठावर परत या",
         viewDetails: "तपशील पहा आणि अर्ज करा",
         printList: "यादी प्रिंट करा",
-        all: "सर्व"
+        all: "सर्व",
+        ends: "शेवटची तारीख:",
+        age: "वय:",
+        docs: "कागदपत्रे"
       },
       categories: {
         Agriculture: "कृषि",
@@ -263,7 +282,12 @@ const resources = {
         Employment: "रोजगार",
         Housing: "गृहनिर्माण",
         Women: "महिला",
-        Senior: "ज्येष्ठ नागरिक"
+        Senior: "ज्येष्ठ नागरिक",
+        "Social Welfare": "समाज कल्याण",
+        Business: "व्यवसाय",
+        Transport: "वाहतूक",
+        Utilities: "उपयुक्तता",
+        Other: "इतर"
       },
       panel: {
         appDetails: "अर्ज तपशील",

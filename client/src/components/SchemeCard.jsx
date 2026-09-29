@@ -17,11 +17,11 @@ export default function SchemeCard({ scheme, onLearnMore }) {
           className="text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded"
           style={{ backgroundColor: catColor, color: 'white' }}
         >
-          {scheme.category}
+          {t(`categories.${scheme.category}`, scheme.category)}
         </span>
         {localizedDeadline && localizedDeadline !== 'Ongoing' && (
           <span className="text-[10px] text-[var(--muted)] font-medium bg-[var(--off-white)] px-2 py-1 rounded">
-            Ends: {localizedDeadline}
+            {t('results.ends')} {localizedDeadline}
           </span>
         )}
       </div>
@@ -37,12 +37,12 @@ export default function SchemeCard({ scheme, onLearnMore }) {
       <div className="flex flex-wrap gap-2 mb-4">
         {scheme.eligibility?.minAge !== undefined && scheme.eligibility?.minAge !== null && (
           <span className="bg-[var(--off-white)] text-[var(--navy)] text-xs px-2 py-1 rounded-md font-medium border border-[var(--border)]">
-            Age: {scheme.eligibility.minAge}+
+            {t('results.age')} {scheme.eligibility.minAge}+
           </span>
         )}
         {(scheme.documents || []).length > 0 && (
           <span className="bg-[var(--off-white)] text-[var(--navy)] text-xs px-2 py-1 rounded-md font-medium border border-[var(--border)]">
-            {scheme.documents.length} Docs
+            {scheme.documents.length} {t('results.docs')}
           </span>
         )}
       </div>
