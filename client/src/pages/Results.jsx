@@ -3,7 +3,7 @@ import SchemeCard from '../components/SchemeCard';
 import HowToApplyPanel from '../components/HowToApplyPanel';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom'; // Added missing import
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useProfile } from '../context/ProfileContext';
 
 export default function Results() {
@@ -12,6 +12,12 @@ export default function Results() {
   const { t } = useTranslation();
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [selectedScheme, setSelectedScheme] = useState(null);
+  const [visibleCount, setVisibleCount] = useState(20);
+
+  // Reset pagination when category changes
+  useEffect(() => {
+    setVisibleCount(20);
+  }, [selectedCategory]);
 
   const categories = useMemo(() => {
     if (!matchedSchemes) return [];
@@ -82,7 +88,7 @@ export default function Results() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 lg:gap-10 results-grid">
-              {filteredSchemes.map(scheme => (
+              {filteredSchemes.slice(0, visibleCount).map(scheme => (
                 <SchemeCard 
                   key={scheme._id || scheme.id} 
                   scheme={scheme} 
@@ -90,6 +96,18 @@ export default function Results() {
                 />
               ))}
             </div>
+            
+            {visibleCount < filteredSchemes.length && (
+              <div className="text-center mt-12">
+                <button 
+                  onClick={() => setVisibleCount(v => v + 20)}
+                  className="px-8 py-3.5 bg-white border-2 border-[var(--saffron)] text-[var(--saffron)] font-bold rounded-xl shadow-md hover:bg-[var(--saffron)] hover:text-white transition-all cursor-pointer"
+                >
+                  Load More Schemes
+                </button>
+              </div>
+            )}
+
             {filteredSchemes.length === 0 && (
               <div className="text-center py-16">
                 <p className="text-[var(--muted)] text-lg">No schemes found in the "{selectedCategory}" category.</p>

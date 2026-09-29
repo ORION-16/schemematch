@@ -6,8 +6,8 @@ const api = axios.create({
   timeout: 10000,
 });
 
-export async function matchProfile(profile) {
-  const { data } = await api.post('/api/schemes/match', { profile });
+export async function matchProfile(profile, page = 1, limit = 1000) {
+  const { data } = await api.post('/api/schemes/match', { profile, page, limit });
   return data;
 }
 
