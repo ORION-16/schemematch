@@ -1,14 +1,46 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { translateText } from '../utils/translate';
 
 export default function SchemeCard({ scheme, onLearnMore }) {
   const { t, i18n } = useTranslation();
   const currentLang = i18n.resolvedLanguage || 'en';
   const catColor = `var(--cat-${scheme.category.toLowerCase()})`;
 
-  const localizedName = scheme.translations?.[currentLang]?.name || scheme.name;
-  const localizedBenefit = scheme.translations?.[currentLang]?.benefit || scheme.benefit;
+  const [localizedName, setLocalizedName] = useState(scheme.translations?.[currentLang]?.name || scheme.name);
+  const [localizedBenefit, setLocalizedBenefit] = useState(scheme.translations?.[currentLang]?.benefit || scheme.benefit);
   const localizedDeadline = scheme.translations?.[currentLang]?.deadline || scheme.deadline;
+
+  useEffect(() => {
+    let isMounted = true;
+    if (scheme.translations?.[currentLang]?.name) {
+      setLocalizedName(scheme.translations[currentLang].name);
+      setLocalizedBenefit(scheme.translations[currentLang].benefit || scheme.benefit);
+      return;
+    }
+    
+    if (currentLang === 'en') {
+      setLocalizedName(scheme.name);
+      setLocalizedBenefit(scheme.benefit);
+      return;
+    }
+
+    const translateScheme = async () => {
+      const transName = await translateText(scheme.name, currentLang);
+      const transBenefit = await translateText(scheme.benefit, currentLang);
+      if (isMounted) {
+        setLocalizedName(transName);
+        setLocalizedBenefit(transBenefit);
+        // Cache translated strings on the object so Panel can use them
+        scheme._translatedName = transName;
+        scheme._translatedBenefit = transBenefit;
+      }
+    };
+    
+    translateScheme();
+    
+    return () => { isMounted = false; };
+  }, [currentLang, scheme]);
 
   return (
     <div className="bg-white rounded-2xl p-6 md:p-8 border border-[var(--border)] shadow-md hover:shadow-xl transition-all hover:-translate-y-1 scheme-card flex flex-col h-full items-start">

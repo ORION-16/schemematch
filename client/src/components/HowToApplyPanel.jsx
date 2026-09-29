@@ -1,16 +1,52 @@
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import { translateText } from '../utils/translate';
 
 export default function HowToApplyPanel({ scheme, onClose }) {
   const { t, i18n } = useTranslation();
   const currentLang = i18n.resolvedLanguage || 'en';
 
+  const [localizedName, setLocalizedName] = useState('');
+  const [localizedBenefit, setLocalizedBenefit] = useState('');
+  const [localizedHowTo, setLocalizedHowTo] = useState('');
+  const [localizedWhatToSay, setLocalizedWhatToSay] = useState('');
+
+  useEffect(() => {
+    if (!scheme) return;
+    let isMounted = true;
+    
+    // Set immediate defaults
+    setLocalizedName(scheme._translatedName || scheme.translations?.[currentLang]?.name || scheme.name);
+    setLocalizedBenefit(scheme._translatedBenefit || scheme.translations?.[currentLang]?.benefit || scheme.benefit);
+    setLocalizedHowTo(scheme.translations?.[currentLang]?.offlineGuidance?.whereTo || scheme.offlineGuidance?.whereTo || '');
+    setLocalizedWhatToSay(scheme.translations?.[currentLang]?.offlineGuidance?.whatToSay || scheme.offlineGuidance?.whatToSay || '');
+
+    if (currentLang === 'en' || scheme._translatedName || scheme.translations?.[currentLang]?.name) {
+      return;
+    }
+
+    const translatePanel = async () => {
+      const transName = await translateText(scheme.name, currentLang);
+      const transBenefit = await translateText(scheme.benefit, currentLang);
+      const transWhereTo = scheme.offlineGuidance?.whereTo ? await translateText(scheme.offlineGuidance.whereTo, currentLang) : '';
+      const transWhatToSay = scheme.offlineGuidance?.whatToSay ? await translateText(scheme.offlineGuidance.whatToSay, currentLang) : '';
+      
+      if (isMounted) {
+        setLocalizedName(transName);
+        setLocalizedBenefit(transBenefit);
+        setLocalizedHowTo(transWhereTo);
+        setLocalizedWhatToSay(transWhatToSay);
+      }
+    };
+    
+    translatePanel();
+    
+    return () => { isMounted = false; };
+  }, [currentLang, scheme]);
+
   if (!scheme) return null;
 
-  const localizedName = scheme.translations?.[currentLang]?.name || scheme.name;
-  const localizedBenefit = scheme.translations?.[currentLang]?.benefit || scheme.benefit;
-  const localizedHowTo = scheme.translations?.[currentLang]?.offlineGuidance?.whereTo || scheme.offlineGuidance?.whereTo;
-  const localizedWhatToSay = scheme.translations?.[currentLang]?.offlineGuidance?.whatToSay || scheme.offlineGuidance?.whatToSay;
   const localizedWhatToBring = scheme.translations?.[currentLang]?.offlineGuidance?.whatToBring || scheme.offlineGuidance?.whatToBring;
 
   return (
