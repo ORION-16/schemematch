@@ -11,6 +11,11 @@ export async function matchProfile(profile, page = 1, limit = 1000) {
   return data;
 }
 
+export async function aiMatchProfile(message) {
+  const { data } = await api.post('/api/schemes/ai-match', { message });
+  return data;
+}
+
 export async function getAllSchemes(category) {
   const params = category ? { category } : {};
   const { data } = await api.get('/api/schemes', { params });

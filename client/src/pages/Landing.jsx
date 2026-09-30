@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import AISearchBar from '../components/AISearchBar';
 
 export default function Landing() {
   const navigate = useNavigate();
@@ -22,6 +23,14 @@ export default function Landing() {
         <p className="text-xl md:text-2xl text-[var(--muted)] mb-12 max-w-3xl mx-auto leading-relaxed">
           {t('landing.subtitle')}
         </p>
+
+        <AISearchBar />
+
+        <div className="flex items-center gap-4 my-8 max-w-md mx-auto">
+          <div className="flex-1 h-px bg-[var(--border)]" />
+          <span className="text-sm font-bold text-[var(--muted)] uppercase tracking-widest">{t('landing.or', 'OR')}</span>
+          <div className="flex-1 h-px bg-[var(--border)]" />
+        </div>
         
         <motion.button
           whileHover={{ scale: 1.05 }}
