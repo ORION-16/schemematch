@@ -31,9 +31,6 @@ export default function SchemeCard({ scheme, onLearnMore }) {
       if (isMounted) {
         setLocalizedName(transName);
         setLocalizedBenefit(transBenefit);
-        // Cache translated strings on the object so Panel can use them
-        scheme._translatedName = transName;
-        scheme._translatedBenefit = transBenefit;
       }
     };
     

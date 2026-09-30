@@ -17,12 +17,12 @@ export default function HowToApplyPanel({ scheme, onClose }) {
     let isMounted = true;
     
     // Set immediate defaults
-    setLocalizedName(scheme._translatedName || scheme.translations?.[currentLang]?.name || scheme.name);
-    setLocalizedBenefit(scheme._translatedBenefit || scheme.translations?.[currentLang]?.benefit || scheme.benefit);
+    setLocalizedName(scheme.translations?.[currentLang]?.name || scheme.name);
+    setLocalizedBenefit(scheme.translations?.[currentLang]?.benefit || scheme.benefit);
     setLocalizedHowTo(scheme.translations?.[currentLang]?.offlineGuidance?.whereTo || scheme.offlineGuidance?.whereTo || '');
     setLocalizedWhatToSay(scheme.translations?.[currentLang]?.offlineGuidance?.whatToSay || scheme.offlineGuidance?.whatToSay || '');
 
-    if (currentLang === 'en' || scheme._translatedName || scheme.translations?.[currentLang]?.name) {
+    if (currentLang === 'en' || scheme.translations?.[currentLang]?.name) {
       return;
     }
 

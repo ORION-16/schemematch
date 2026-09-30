@@ -15,11 +15,29 @@ const importSchemes = require('./data/importSchemes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const isDevelopment = process.env.NODE_ENV !== 'production';
+const configuredOrigins = (process.env.CLIENT_URL || '')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+const isAllowedOrigin = (origin) => {
+  // Requests such as health checks and the same-origin production app do not
+  // include an Origin header.
+  if (!origin || configuredOrigins.includes(origin)) return true;
+
+  // Vite moves to the next available port when 5173 is occupied. Accept local
+  // development servers without opening CORS to arbitrary production origins.
+  return isDevelopment && /^http:\/\/(localhost|127\.0\.0\.1):\d+$/.test(origin);
+};
 
 // ── Middleware ──
 app.use(
   cors({
-    origin: [process.env.CLIENT_URL || 'http://localhost:5173', 'http://localhost:5173'],
+    origin(origin, callback) {
+      if (isAllowedOrigin(origin)) return callback(null, true);
+      return callback(new Error(`Origin ${origin} is not allowed by CORS`));
+    },
     credentials: true,
   })
 );
