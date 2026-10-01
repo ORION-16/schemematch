@@ -1,35 +1,42 @@
 const { extractProfile } = require('../services/geminiService');
 const Scheme = require('../models/Scheme');
-
-// Reuse the same isEligible and relevanceScore functions from schemeController
-// Move those two functions to a shared utility file instead of duplicating
-
-const { isEligible, relevanceScore } = require('./schemeController');
+const { buildSchemeFilter, buildTagBoosts } = require('../utils/buildSchemeFilter');
 
 exports.aiMatch = async (req, res, next) => {
   try {
     const { message } = req.body;
-    if (!message) {
-      return res.status(400).json({ success: false, error: 'Message is required' });
+    if (!message || message.trim().length < 5) {
+      return res.status(400).json({ success: false, error: 'Please describe yourself in a few words' });
     }
 
-    // Step 1: Extract structured profile from natural language
     const profile = await extractProfile(message);
-    console.log('Extracted profile:', profile);
+    console.log('Extracted profile:', JSON.stringify(profile));
 
-    // Step 2: Run through existing matcher
-    const allSchemes = await Scheme.find({}).lean();
-    const matched = allSchemes
-      .filter(scheme => isEligible(scheme, profile))
-      .sort((a, b) => relevanceScore(b, profile) - relevanceScore(a, profile))
-      .slice(0, 20); // Top 20 results
+    const mongoFilter = buildSchemeFilter(profile);
+    const tagBoosts = buildTagBoosts(profile);
+
+    const allMatched = await Scheme.find(mongoFilter).lean();
+
+    // Score by tags
+    const scored = allMatched.map(s => {
+      let score = 0;
+      const tags = (s.tags || []).map(t => t.toLowerCase());
+      tagBoosts.forEach(boost => {
+        if (tags.some(t => t.includes(boost.toLowerCase()))) score += 2;
+      });
+      if (s.state === 'Central') score += 1;
+      return { ...s, _score: score };
+    });
+
+    scored.sort((a, b) => b._score - a._score);
 
     res.json({
       success: true,
-      extractedProfile: profile, // Send back so frontend can show "We understood: age 24, SC student..."
-      total: matched.length,
-      schemes: matched
+      extractedProfile: profile,
+      total: scored.length,
+      schemes: scored.slice(0, 20)
     });
+
   } catch (error) {
     next(error);
   }
