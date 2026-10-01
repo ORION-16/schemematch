@@ -1,4 +1,5 @@
 const Scheme = require('../models/Scheme');
+const { buildSchemeFilter, buildTagBoosts } = require('../utils/buildSchemeFilter');
 
 /**
  * Self-healing helper: If the database is empty, seed it with initial data.
@@ -72,25 +73,92 @@ function isEligible(scheme, profile) {
   return true;
 }
 
-/**
- * Compute a relevance score for a matched scheme.
- * Higher score = more eligibility fields actively match the user.
- * Used to sort results so the most-relevant schemes appear first.
- */
-function relevanceScore(scheme, profile) {
+function getMatchDetails(scheme, profile) {
   let score = 0;
+  let maxPossibleScore = 0;
   const e = scheme.eligibility || {};
 
-  // Occupation and caste/category are weighted highest because
-  // they are the strongest signal that a scheme was designed for this user.
-  if (e.occupations?.includes(profile.occupation)) score += 3;
-  if (e.categories?.includes(profile.category)) score += 3;
-  if (e.requiredGender === profile.gender) score += 2;
-  if (e.maxIncome && profile.income && profile.income <= e.maxIncome) score += 1;
-  if (e.minAge && profile.age && profile.age >= e.minAge) score += 1;
-  if (e.maxAge && profile.age && profile.age <= e.maxAge) score += 1;
+  const textSpace = [
+    ...(scheme.tags || []),
+    scheme.name || '',
+    scheme.category || '',
+    scheme.benefit || ''
+  ].join(' ').toLowerCase();
 
-  return score;
+  const checkMatch = (condition, weight) => {
+    maxPossibleScore += weight;
+    if (condition) score += weight;
+  };
+
+  // 1. Occupation
+  if (profile.occupation) {
+    const occ = profile.occupation.toLowerCase();
+    const explicit = e.occupations?.includes(profile.occupation);
+    const implicit = textSpace.includes(occ) ||
+                     (occ === 'farmer' && textSpace.includes('agricultur')) ||
+                     (occ === 'student' && (textSpace.includes('scholarship') || textSpace.includes('education')));
+
+    checkMatch(explicit || implicit, 10);
+  }
+
+  // 2. Category / Caste
+  if (profile.category && profile.category !== 'General') {
+    const explicit = e.categories?.includes(profile.category);
+    const implicit = textSpace.includes(profile.category.toLowerCase());
+    checkMatch(explicit || implicit, 10);
+  }
+
+  // 3. Gender
+  if (profile.gender) {
+    const g = profile.gender.toLowerCase();
+    const explicit = e.requiredGender === profile.gender;
+    const implicit = textSpace.includes(g) ||
+                     (g === 'female' && (textSpace.includes('women') || textSpace.includes('girl')));
+    checkMatch(explicit || implicit, 8);
+  }
+
+  // 4. State
+  if (profile.state) {
+    const explicit = scheme.stateCodes?.includes(profile.state);
+    const implicit = textSpace.includes(profile.state.toLowerCase());
+    checkMatch(explicit || implicit, 5);
+  }
+
+  // 5. BPL
+  if (profile.hasBPL === 'yes') {
+    const explicit = e.requiresBPL;
+    const implicit = textSpace.includes('bpl') || textSpace.includes('poverty');
+    if (explicit || implicit) {
+      maxPossibleScore += 5;
+      score += 5;
+    }
+  }
+
+  // 6. Explicit strict rules match gives bonus points
+  if (e.minAge && profile.age && profile.age >= e.minAge) score += 3;
+  if (e.maxAge && profile.age && profile.age <= e.maxAge) score += 3;
+  if (e.maxIncome && profile.income && profile.income <= e.maxIncome) score += 5;
+
+  // Calculate percentage
+  let percentage = 0;
+  if (maxPossibleScore > 0) {
+     percentage = Math.round((score / maxPossibleScore) * 100);
+  } else {
+     percentage = 50; // Neutral base if no distinct profile features exist
+  }
+
+  // Bonus base points for matching something
+  if (score > 0) {
+    percentage = Math.min(percentage + 15, 99);
+  } else {
+    // Generic match
+    percentage = Math.floor(Math.random() * 15) + 35; // 35-50%
+  }
+
+  // 100% reserved for explicit perfect matches
+  if (score > 15 && e.occupations?.length > 0) percentage = 100;
+
+  return { score, percentage };
 }
 
 // POST /api/schemes/match
@@ -98,27 +166,57 @@ exports.matchSchemes = async (req, res, next) => {
   try {
     await ensureSchemes();
     const { profile, page = 1, limit = 20 } = req.body;
-    if (!profile) {
-      return res.status(400).json({ success: false, error: 'Profile is required' });
+    if (!profile) return res.status(400).json({ success: false, error: 'Profile is required' });
+
+    const mongoFilter = buildSchemeFilter(profile);
+    const total = await Scheme.countDocuments(mongoFilter);
+
+    // Build relevance score using tags
+    // If profile has occupation/category, boost schemes whose tags mention them
+    const tagBoosts = buildTagBoosts(profile);
+
+    let query = Scheme.find(mongoFilter).lean();
+
+    // If we have tag boosts, sort by tag relevance
+    if (tagBoosts.length > 0) {
+      const schemes = await query.exec();
+      const scored = schemes.map(s => {
+        let score = 0;
+        const tags = (s.tags || []).map(t => t.toLowerCase());
+        tagBoosts.forEach(boost => {
+          if (tags.some(t => t.includes(boost.toLowerCase()))) score += 2;
+        });
+        // Boost central schemes slightly
+        if (s.state === 'Central') score += 1;
+        return { ...s, _score: score };
+      });
+
+      scored.sort((a, b) => b._score - a._score);
+
+      const paginated = scored.slice((page - 1) * limit, page * limit);
+      return res.json({
+        success: true,
+        total,
+        page: Number(page),
+        totalPages: Math.ceil(total / limit),
+        schemes: paginated
+      });
     }
 
-    const allSchemes = await Scheme.find({}).lean();
-
-    const matched = allSchemes
-      .filter((scheme) => isEligible(scheme, profile))
-      .sort((a, b) => relevanceScore(b, profile) - relevanceScore(a, profile));
-
-    // Paginate
-    const start = (page - 1) * limit;
-    const paginated = matched.slice(start, start + limit);
+    // No tag boosts — just paginate
+    const schemes = await query
+      .skip((page - 1) * limit)
+      .limit(Number(limit))
+      .exec();
 
     res.json({
       success: true,
-      total: matched.length,
+      total,
       page: Number(page),
-      totalPages: Math.ceil(matched.length / limit),
-      schemes: paginated,
+      totalPages: Math.ceil(total / limit),
+      schemes
     });
+
   } catch (error) {
     next(error);
   }
@@ -175,4 +273,5 @@ exports.searchSchemes = async (req, res, next) => {
 
 // Add at the bottom of schemeController.js
 module.exports.isEligible = isEligible;
-module.exports.relevanceScore = relevanceScore;
+module.exports.getMatchDetails = getMatchDetails;
+module.exports.relevanceScore = getMatchDetails;
