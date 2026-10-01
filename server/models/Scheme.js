@@ -66,5 +66,10 @@ const schemeSchema = new mongoose.Schema(
 );
 
 schemeSchema.index({ name: 'text', benefit: 'text' });
+schemeSchema.index({ 'eligibility.minAge': 1, 'eligibility.maxAge': 1 });
+schemeSchema.index({ 'eligibility.maxIncome': 1 });
+schemeSchema.index({ 'eligibility.occupations': 1 });
+schemeSchema.index({ 'eligibility.categories': 1 });
+schemeSchema.index({ tags: 1 });
 
 module.exports = mongoose.model('Scheme', schemeSchema);
